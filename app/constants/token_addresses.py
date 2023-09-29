@@ -1,18 +1,6 @@
-# wemix_get_balance
+from enum import Enum
 
-
-### docker build -t get_balance .
-
-docker run -p 8000:8000 get_balance
-
-
-예: /balance/0xYourAddress/eth?timestamp=2023-09-23%2022:49:49
-
-timestamp를 지정하지 않으면 최신 블록의 잔액을 반환합니다.
-
-## 토큰 주소들 (wemix chain)
-
-    WEMIX = ""
+class TokenAddresses(Enum):
     WWEMIX = "0x7D72b22a74A216Af4a002a1095C8C707d6eC1C5f"
     WEMIX_DOLLAR = "0x8E81fCc2d4A3bAa0eE9044E0D7E36F59C9BbA9c1"
     WCD = "0x2ec6Fc5c495aF0C439E17268d595286d5f897dD0"
