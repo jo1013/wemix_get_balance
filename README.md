@@ -25,3 +25,38 @@ timestamp를 지정하지 않으면 최신 블록의 잔액을 반환합니다.
     KLEVA = "0xe6801928061CDbE32AC5AD0634427E140EFd05F9"
     USDT = "0xA649325Aa7C5093d12D6F98EB4378deAe68CE23F"
     oUSDC = "0xE4c2b5db9de5da0A17ED7ec7176602ad99E52624"   
+
+
+
+## 구조
+
+/fastapi_project
+│
+├── /app
+│   ├── __init__.py
+│   ├── main.py                # FastAPI 앱 인스턴스와 라우터들을 포함하는 메인 파일
+│   ├── /models
+│   │   ├── __init__.py
+│   │   ├── item.py           # Pydantic 모델과 같은 데이터 모델
+│   │   └── user.py
+│   │
+│   ├── /routers
+│   │   ├── __init__.py
+│   │   ├── item_router.py    # 각각의 엔드포인트 및 비즈니스 로직을 포함하는 라우터
+│   │   └── user_router.py
+│   │
+│   └── /dependencies
+│       ├── __init__.py
+│       └── database.py       # 데이터베이스 연결 및 다른 종속성
+│   └── /constants                # 상수를 보관하기 위한 디렉토리
+│       ├── __init__.py
+│       └── token_addresses.py   # ENUM으로 토큰 주소를 관리하는 파일
+├── /tests
+│   ├── __init__.py
+│   ├── test_main.py          # 테스트 케이스
+│   └── ...
+│   └── /resources              # 리소스를 보관하기 위한 디렉토리
+│       └── token_abi.json      # 토큰의 ABI를 포함하는 JSON 파일
+├── Dockerfile                # 앱을 Docker 컨테이너로 실행하기 위한 Dockerfile
+├── requirements.txt          # 필요한 Python 패키지를 나열하는 파일
+└── .gitignore
