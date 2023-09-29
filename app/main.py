@@ -20,11 +20,11 @@ with open(ABI_PATH, "r") as abi_file:
 def get_block_number_from_timestamp(target_timestamp):
     # 시작 블록과 마지막 블록
     start_block = 0
-    end_block = w3.eth.blockNumber
+    end_block = w3.eth.block_number
 
     while start_block <= end_block:
         mid_block = (start_block + end_block) // 2
-        mid_block_time = w3.eth.getBlock(mid_block)['timestamp']
+        mid_block_time = w3.eth.get_block(mid_block)['timestamp']
 
         if target_timestamp < mid_block_time:
             end_block = mid_block - 1
@@ -32,7 +32,7 @@ def get_block_number_from_timestamp(target_timestamp):
             start_block = mid_block + 1
         else:
             return mid_block
-    return start_block if w3.eth.getBlock(start_block)['timestamp'] - target_timestamp < target_timestamp - w3.eth.getBlock(end_block)['timestamp'] else end_block
+    return start_block if w3.eth.getBlock(start_block)['timestamp'] - target_timestamp < target_timestamp - w3.eth.get_block(end_block)['timestamp'] else end_block
 
 
 @app.get("/balance/{address}/{token}")
