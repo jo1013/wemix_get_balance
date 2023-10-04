@@ -32,19 +32,22 @@ def get_block_number_from_timestamp(target_timestamp):
             start_block = mid_block + 1
         else:
             return mid_block
-    return start_block if w3.eth.getBlock(start_block)['timestamp'] - target_timestamp < target_timestamp - w3.eth.get_block(end_block)['timestamp'] else end_block
+    return None
+    # return start_block if w3.eth.getBlock(start_block)['timestamp'] - target_timestamp < target_timestamp - w3.eth.get_block(end_block)['timestamp'] else end_block
 
 
 @app.get("/balance/{address}/{token}")
 async def read_balance(address: str, token: str, timestamp: str = Query(None)):
     if timestamp:
-        datetime_obj = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+        datetime_obj = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S")
         target_timestamp = int(datetime_obj.timestamp())
         block_number = get_block_number_from_timestamp(target_timestamp)
     else:
         block_number = None
 
-    if token == "eth":
+    # if token == 'klaytn' :
+    # if token == "eth" :
+    if token == 'wemix' :
         # Ether의 잔액 조회
         balance = w3.eth.get_balance(address, block_identifier=block_number)
         return {"balance": w3.from_wei(balance, 'ether')}

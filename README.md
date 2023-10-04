@@ -1,12 +1,16 @@
 # wemix_get_balance
 
+### app/constants/token_addresses.py
+  * 토큰주소는 변경해줘야한다.
 
 ### docker build -t get_balance .
 
+#### dockerfile이 있는 폴더에서 실행
+docker build -t get_balance .
 docker run -p 8000:8000 get_balance
 
 
-예: /balance/0xYourAddress/eth?timestamp=2023-09-23%2022:49:49
+예: /balance/0xYourAddress/wemix?timestamp=2023-09-30 12:00:00
 
 timestamp를 지정하지 않으면 최신 블록의 잔액을 반환합니다.
 
@@ -30,6 +34,7 @@ timestamp를 지정하지 않으면 최신 블록의 잔액을 반환합니다.
 
 ## 구조
 
+```
 /fastapi_project
 │
 ├── /app
@@ -60,3 +65,4 @@ timestamp를 지정하지 않으면 최신 블록의 잔액을 반환합니다.
 ├── Dockerfile                # 앱을 Docker 컨테이너로 실행하기 위한 Dockerfile
 ├── requirements.txt          # 필요한 Python 패키지를 나열하는 파일
 └── .gitignore
+```
