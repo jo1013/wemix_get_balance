@@ -5,16 +5,21 @@ from fastapi import FastAPI, HTTPException, Query
 from web3 import Web3
 from constants import TokenAddresses
 
+
 app = FastAPI()
 
 w3 = Web3(Web3.HTTPProvider('https://api.wemix.com/'))
+
 
 # 현재 스크립트의 절대 경로를 구합니다.
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ABI_PATH = os.path.join(BASE_DIR, "resources", "token_abi.json")
 
+
+
 with open(ABI_PATH, "r") as abi_file:
     token_abi = json.load(abi_file)
+
 
 
 def get_block_number_from_timestamp(target_timestamp):
@@ -33,7 +38,38 @@ def get_block_number_from_timestamp(target_timestamp):
         else:
             return mid_block
     return None
-    # return start_block if w3.eth.getBlock(start_block)['timestamp'] - target_timestamp < target_timestamp - w3.eth.get_block(end_block)['timestamp'] else end_block
+
+
+
+def get_balance(w3, address, token, block_number=None):
+    # 체크 섬
+    check_sum_address = w3.to_checksum_address(address)
+
+    if token == 'wemix': 
+        # Ether의 잔액 조회
+        balance_wei = w3.eth.get_balance(check_sum_address, block_identifier=block_number)
+        balance = w3.from_wei(balance_wei, 'ether')
+        # 큰 수를 안전하게 처리하기 위해 문자열로 변환
+        if block_number is None :
+           block_number = w3.eth.block_number
+        return {"balance": str(balance), "block_number" : str(block_number)}
+    elif token in TokenAddresses._member_names_:
+        # 토큰 컨트랙트 주소 가져오기
+        token_contract_address = TokenAddresses[token].value
+        # 토큰 컨트랙트 생성
+        token_contract = w3.eth.contract(address=token_contract_address, abi=token_abi)
+        # 잔액 조회 (가장 작은 단위)
+        balance = token_contract.functions.balanceOf(check_sum_address).call(block_identifier=block_number)
+        # 토큰의 decimals 값 가져오기
+        decimals = token_contract.functions.decimals().call()
+        # "정상" 단위로 잔액 변환
+        balance_normalized = balance / (10 ** decimals)
+        if block_number is None :
+            block_number = w3.eth.block_number
+        # 큰 수를 안전하게 처리하기 위해 문자열로 변환
+        return {"balance": str(balance_normalized), "block_number" : str(block_number)}
+    else:
+        return {"error": "Unsupported token"}
 
 
 @app.get("/balance/{address}/{token}")
@@ -45,16 +81,15 @@ async def read_balance(address: str, token: str, timestamp: str = Query(None)):
     else:
         block_number = None
 
-    # if token == 'klaytn' :
-    # if token == "eth" :
-    if token == 'wemix' :
-        # Ether의 잔액 조회
-        balance = w3.eth.get_balance(address, block_identifier=block_number)
-        return {"balance": w3.from_wei(balance, 'ether')}
-    elif token in TokenAddresses._member_names_:
-        token_contract_address = TokenAddresses[token].value
-        token_contract = w3.eth.contract(address=token_contract_address, abi=token_abi)
-        balance = token_contract.functions.balanceOf(address).call(block_identifier=block_number)
-        return {"balance": balance}
-    else:
-        raise HTTPException(status_code=400, detail="Unsupported token name")
+    return_value = get_balance(w3, address, token, block_number)
+    return return_value
+
+
+
+
+
+
+
+
+
+
